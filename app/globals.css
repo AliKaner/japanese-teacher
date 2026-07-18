@@ -36,17 +36,31 @@ body {
   font-family: var(--font-ui), -apple-system, "Segoe UI", Roboto,
     "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
   line-height: 1.6;
+  /* Sticky footer: içerik kısa/yüklenirken bile footer en altta kalır */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .jp {
   font-family: var(--font-jp), "Yu Gothic UI", "Hiragino Sans", "Meiryo",
     "MS Gothic", sans-serif;
 }
+/* Ayarlardan seçilen Japonca yazı tipi (html[data-jpfont]) */
+html[data-jpfont="sharp"] .jp {
+  font-family: var(--font-jp-sharp), "Yu Mincho", "Hiragino Mincho ProN",
+    serif;
+}
+html[data-jpfont="play"] .jp {
+  font-family: var(--font-jp-play), var(--font-jp), "Yu Gothic UI", sans-serif;
+}
 
 .container {
   max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
   padding: 24px 16px 64px;
+  flex: 1;
 }
 
 /* ---------- Üst bar ---------- */
@@ -901,6 +915,179 @@ h1 { animation: rise 0.3s ease both; }
 .btn:active { transform: translateY(0); }
 .quiz-option { transition: transform 0.1s ease, background 0.15s, border-color 0.15s; }
 .quiz-option:not(:disabled):hover { transform: translateY(-1px); }
+
+/* ---------- Kanji Testi ---------- */
+.ktest-card { max-width: 520px; margin: 0 auto; }
+.ktest-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.ktest-form { justify-content: center; }
+.ktest-word { font-size: 2.6rem; cursor: pointer; }
+.ktest-ok {
+  color: var(--ok);
+  font-weight: 700;
+  text-align: center;
+  margin: 10px 0 0;
+}
+.ktest-no { text-align: center; }
+.ktest-actions { text-align: center; margin-top: 14px; }
+
+/* ---------- Font Seçici ---------- */
+.font-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.font-option {
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 10px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.font-option:hover { border-color: var(--accent); }
+.font-option.active { border-color: var(--accent); background: var(--accent-soft); }
+.font-sample { font-size: 1.7rem; line-height: 1.2; }
+.fs-round { font-family: var(--font-jp), "Yu Gothic UI", sans-serif; }
+.fs-sharp { font-family: var(--font-jp-sharp), "Yu Mincho", serif; }
+.fs-play { font-family: var(--font-jp-play), "Yu Gothic UI", sans-serif; }
+
+/* Mobil menü elemanları masaüstünde gizli */
+.burger-btn { display: none; }
+.bottom-nav { display: none; }
+.mobile-menu { display: none; }
+
+/* ---------- Mobil / Responsive ---------- */
+@media (max-width: 640px) {
+  .container { padding: 14px 10px 40px; }
+  h1 { font-size: 1.25rem; }
+  .card { padding: 14px; border-radius: 12px; }
+  body { padding-bottom: 74px; } /* alt menünün altında içerik kalmasın */
+
+  /* Üst bar: sadece arama + burger */
+  .topbar { padding: 10px 10px; }
+  .topbar-row { gap: 8px; flex-wrap: nowrap; }
+  .brand { display: none; }
+  .topbar-actions { display: none; }
+  .nav { display: none; }
+  .nav-search { max-width: none; margin: 0; flex: 1; }
+  .burger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Burger açılır menü */
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 8px;
+    left: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 8px;
+    z-index: 90;
+    animation: rise 0.15s ease;
+  }
+  .mobile-menu a {
+    padding: 11px 12px;
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .mobile-menu a:hover,
+  .mobile-menu a.active { background: var(--accent-soft); }
+  .mobile-menu .lang-toggle { margin: 8px auto 4px; }
+
+  /* Alt menü (app tarzı) */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  }
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 700;
+    min-width: 52px;
+  }
+  .bottom-nav a.active { color: var(--accent); }
+  .bottom-nav .bn-icon { font-size: 1.3rem; line-height: 1; }
+  .bottom-nav .bottom-logo {
+    margin-top: -26px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .bottom-nav .bottom-logo.active { border-color: var(--gold); }
+
+  .kanji-map { grid-template-columns: repeat(auto-fill, minmax(17px, 1fr)); gap: 2px; }
+  .kcell { font-size: 9px; border-radius: 3px; }
+  .kanji-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  .kanji-stats { gap: 10px; font-size: 0.9rem; }
+
+  .modal { padding: 16px 14px; border-radius: 14px; max-height: 94vh; }
+  .modal-char { font-size: 3.2rem; min-width: 64px; }
+
+  .profile-banner { height: 140px; border-radius: 12px 12px 0 0; }
+  .avatar, .avatar-img { width: 84px; height: 84px; }
+  .avatar-wrap { margin-top: -42px; }
+  .profile-name { font-size: 1.25rem; }
+  .profile-stats-row { gap: 14px; font-size: 0.9rem; }
+  .daily-grid { grid-template-rows: repeat(7, 10px); grid-auto-columns: 10px; }
+  .dcell { width: 10px; height: 10px; }
+
+  .friend-row { font-size: 0.9rem; }
+  .friend-stats { font-size: 0.85rem; }
+  .footer { padding: 18px 12px 28px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

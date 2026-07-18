@@ -1,5 +1,10 @@
 import "./globals.css";
-import { Nunito, Zen_Maru_Gothic } from "next/font/google";
+import {
+  Nunito,
+  Zen_Maru_Gothic,
+  Shippori_Mincho,
+  Hachi_Maru_Pop,
+} from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
@@ -14,6 +19,18 @@ const zenMaru = Zen_Maru_Gothic({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
   variable: "--font-jp",
+});
+
+const shippori = Shippori_Mincho({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-jp-sharp",
+});
+
+const hachiMaru = Hachi_Maru_Pop({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-jp-play",
 });
 
 const SITE_URL = "https://neko-kanji.com";
@@ -80,7 +97,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} ${zenMaru.variable}`}>
+      <body
+        className={`${nunito.variable} ${zenMaru.variable} ${shippori.variable} ${hachiMaru.variable}`}
+      >
         <ConvexClientProvider>
           <I18nProvider>
             <Nav />

@@ -165,7 +165,7 @@ function RandomChar() {
           <div
             className="big-char jp"
             onClick={() => setDetail(item)}
-            title="Detay için tıkla"
+            title={t("modal.clickDetail")}
             style={{ cursor: "pointer" }}
           >
             {displayChar(item)}
@@ -222,7 +222,7 @@ function RandomChar() {
                   key={w.w}
                   className="word-item"
                   onClick={() => speak(w.kana)}
-                  title="Dinlemek için tıkla"
+                  title={t("modal.clickListen")}
                 >
                   <span className="w jp">{w.w}</span>
                   <span className="r jp">{w.kana}</span>

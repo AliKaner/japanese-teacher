@@ -115,7 +115,7 @@ export default function LearnKanjiPage() {
           onClick={learnRandom}
           style={{ padding: "8px 16px", fontSize: "0.9rem" }}
         >
-          🎲 Rastgele
+          {t("learn.random")}
         </button>
       </div>
 

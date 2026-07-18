@@ -40,6 +40,14 @@ export default function KanjiMapPage() {
         </div>
       )}
 
+      {isAuthenticated && (
+        <p style={{ margin: "0 0 14px" }}>
+          <Link className="btn" href="/kanji/test">
+            {t("ktest.cta")}
+          </Link>
+        </p>
+      )}
+
       {isAuthenticated && stats && (
         <div className="kanji-stats">
           <span>

@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n";
 
 // KanjiVG verisiyle animasyonlu çizgi sırası gösterimi.
 // Soluk gri: hedef şekil; kırmızı: çizilmiş çizgiler; altın: o an çizilen çizgi.
 export default function StrokeOrder({ char, size = 190 }) {
+  const { t } = useI18n();
   const [paths, setPaths] = useState(null);
   const [numbers, setNumbers] = useState([]);
   const [status, setStatus] = useState("loading");
@@ -170,15 +172,15 @@ export default function StrokeOrder({ char, size = 190 }) {
           className="btn small"
           onClick={play}
           disabled={status !== "ready" || playing}
-          title="Çizgi sırasını baştan izle"
+          title={t("modal.replay")}
         >
-          ▶ İzle
+          {t("modal.watch")}
         </button>
         <button
           className="btn secondary small"
           onClick={() => setUpTo(Math.max(0, drawn - 1))}
           disabled={status !== "ready" || drawn === 0}
-          title="Bir çizgi geri"
+          title={t("modal.back")}
         >
           ⏮
         </button>
@@ -186,21 +188,21 @@ export default function StrokeOrder({ char, size = 190 }) {
           className="btn secondary small"
           onClick={() => setUpTo(Math.min(paths?.length || 0, drawn + 1))}
           disabled={status !== "ready" || !paths || drawn >= paths.length}
-          title="Bir çizgi ileri"
+          title={t("modal.forward")}
         >
           ⏭
         </button>
         <button
           className={`btn small ${showNumbers ? "" : "secondary"}`}
           onClick={() => setShowNumbers((s) => !s)}
-          title="Çizgi numaralarını göster/gizle"
+          title={t("modal.numbers")}
         >
           🔢
         </button>
       </div>
       {paths && (
         <div className="hint" style={{ marginTop: 4 }}>
-          {drawn}/{paths.length} çizgi
+          {t("modal.strokeCount", { a: drawn, b: paths.length })}
         </div>
       )}
     </div>

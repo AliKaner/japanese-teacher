@@ -102,6 +102,33 @@ function AccountInfo() {
   );
 }
 
+function FontPicker() {
+  const { t, jpFont, setJpFont } = useI18n();
+  const options = [
+    { id: "sharp", label: t("font.sharp") },
+    { id: "round", label: t("font.round") },
+    { id: "play", label: t("font.play") },
+  ];
+  return (
+    <div className="card" style={{ maxWidth: 420, margin: "14px auto 0" }}>
+      <h2 style={{ marginTop: 0 }}>{t("account.font")}</h2>
+      <p className="hint" style={{ marginTop: 0 }}>{t("account.fontHint")}</p>
+      <div className="font-picker">
+        {options.map((o) => (
+          <button
+            key={o.id}
+            className={`font-option ${jpFont === o.id ? "active" : ""}`}
+            onClick={() => setJpFont(o.id)}
+          >
+            <span className={`font-sample fs-${o.id}`}>猫あ漢</span>
+            <span>{o.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function AccountPage() {
   const { t } = useI18n();
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -116,6 +143,7 @@ export default function AccountPage() {
       ) : (
         <AuthForm />
       )}
+      <FontPicker />
     </div>
   );
 }
