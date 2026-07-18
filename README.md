@@ -2,7 +2,8 @@
 
 **Learn the top 2500 Japanese kanji — and race your friends while doing it.**
 
-🔗 **Live:** [neko-kanji.com](https://neko-kanji.com)
+🔗 **Live:** [neko-kanji.com](https://neko-kanji.com)  
+🐙 **GitHub Repo:** [github.com/AliKaner/neko-kanji](https://github.com/AliKaner/neko-kanji)
 
 ![Neko Kanji](public/og.png)
 
@@ -15,7 +16,11 @@ A GitHub-contribution-style map of the **2500 most frequent kanji**, ordered by 
 
 ### 🎮 Gamification
 - **XP & Levels** — every correct answer earns XP; levels come with Japanese titles: 🌱 見習い → 📖 学生 → ⚔️ 侍 → 🎓 先生 → 🏵 達人 → 🌸 仙人
-- **Badges** — HackerRank-style hexagon badges for milestones (first kanji, 100/500/1000/2500 kanji, score goals, 7-day streak…)
+- **Expanded Badges** — Hexagon badges for 26 milestones:
+  - *Kanjis learned milestones* (1, 10, 50, 100, 250, 500, 1000, 1500, 2000, 2500 kanjis)
+  - *Score goals* (10, 50, 100, 500, 1000, 5000 points)
+  - *Colored stars breakdown* (5 blue stars, 5 green stars, 5 purple stars, 1 gold star, 10 gold stars, 50 gold stars)
+  - *Study streaks* (3-day, 7-day, 30-day, 100-day streaks)
 - **Daily progress map** — a second heatmap showing your correct answers per day over the last 15 weeks
 
 ### 👥 Social
@@ -24,14 +29,28 @@ A GitHub-contribution-style map of the **2500 most frequent kanji**, ordered by 
 - **Groups** — create a group, invite friends with a 6-character code, and race other groups on a global leaderboard (group score = sum of member scores)
 
 ### 📚 Learning Tools
-- **Learn** — hiragana & katakana charts + JLPT N5 kanji with example words and writing practice
-- **Practice** — multiple-choice quizzes and random-character drills (wired into the kanji map)
+- **Split Learning Pages** — separate subpages for focused study:
+  - **Hiragana** (`/learn/hiragana`) and **Katakana** (`/learn/katakana`) charts.
+  - **Kanji Catalog** (`/learn/kanji`) listing all 2501 kanjis with search, JLPT level filter, dynamic pagination (100 per page), writing practice stroke diagrams, and a **`🎲 Rastgele`** button to learn kanji randomly.
+- **Overhauled Practice** — multiple-choice quizzes and random-character drills supporting JLPT level filtering.
 - **Reading** — Japanese texts with a hover dictionary: reading, romaji and meaning for every word
 - **Dictionary** — Jisho-powered word lookup
 - **Unified search** — one search box in the header finds both users and kanji (by character or frequency rank)
 
 ### 🌏 Bilingual
 Full Turkish / English UI toggle — including quiz answers, reading glosses and kanji meanings.
+
+## Contributing
+
+Contributions are welcome! If you want to contribute:
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature-name`.
+3. Make your changes and verify with `npm run build`.
+4. Commit your changes: `git commit -m 'Add some feature'`.
+5. Push to the branch: `git push origin feature-name`.
+6. Open a Pull Request.
+
+Feel free to submit bug reports, requests, or general feedback in the Issues tab!
 
 ## Tech Stack
 
@@ -79,13 +98,14 @@ On Vercel, set `NEXT_PUBLIC_CONVEX_URL` to your **prod** Convex URL and deploy f
 ```
 app/                # Next.js pages (learn, practice, read, dictionary,
 │                   #   kanji, friends, groups, account, profile/[userId])
-components/         # Nav, KanjiHeatmap, Logo, providers…
+components/         # Nav, Footer, KanjiHeatmap, Logo, providers…
 convex/             # schema + queries/mutations (kanji, progress, users,
 │                   #   friends, groups, search) + Convex Auth setup
 lib/                # i18n (TR/EN UI strings), en.js (content translations),
-                    #   kana/kanji/word/text data, romaji, TTS helpers
+│                   #   kana/kanji/word/text data, romaji, TTS helpers
 ```
 
 ---
 
-がんばって！ 🐱
+Geliştiren: [Ali Kaner](https://alikaner.com) 🐱
+がんばって！

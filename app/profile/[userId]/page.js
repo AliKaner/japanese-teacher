@@ -172,14 +172,34 @@ function Badges({ stats, starCounts, daily }) {
   const streak = currentStreak(daily);
   const badges = [
     { key: "badge.first", icon: "🐣", earned: stats.learned >= 1 },
+    { key: "badge.k10", icon: "🌱", earned: stats.learned >= 10 },
+    { key: "badge.k50", icon: "🌿", earned: stats.learned >= 50 },
     { key: "badge.k100", icon: "📚", earned: stats.learned >= 100 },
+    { key: "badge.k250", icon: "🎓", earned: stats.learned >= 250 },
     { key: "badge.k500", icon: "🎯", earned: stats.learned >= 500 },
     { key: "badge.k1000", icon: "🏔", earned: stats.learned >= 1000 },
+    { key: "badge.k1500", icon: "🦅", earned: stats.learned >= 1500 },
+    { key: "badge.k2000", icon: "👑", earned: stats.learned >= 2000 },
     { key: "badge.all", icon: "🗾", earned: stats.learned >= TOTAL_KANJI },
-    { key: "badge.s100", icon: "⭐", earned: stats.score >= 100 },
-    { key: "badge.s500", icon: "💫", earned: stats.score >= 500 },
-    { key: "badge.gold10", icon: "🥇", earned: starCounts[4] >= 10 },
+    
+    { key: "badge.s10", icon: "⭐", earned: stats.score >= 10 },
+    { key: "badge.s50", icon: "✨", earned: stats.score >= 50 },
+    { key: "badge.s100", icon: "💫", earned: stats.score >= 100 },
+    { key: "badge.s500", icon: "🏆", earned: stats.score >= 500 },
+    { key: "badge.s1000", icon: "💎", earned: stats.score >= 1000 },
+    { key: "badge.s5000", icon: "🌌", earned: stats.score >= 5000 },
+    
+    { key: "badge.blue5", icon: "💧", earned: starCounts[1] >= 5 },
+    { key: "badge.green5", icon: "🍀", earned: starCounts[2] >= 5 },
+    { key: "badge.purple5", icon: "🔮", earned: starCounts[3] >= 5 },
+    { key: "badge.gold1", icon: "🥇", earned: starCounts[4] >= 1 },
+    { key: "badge.gold10", icon: "🎖", earned: starCounts[4] >= 10 },
+    { key: "badge.gold50", icon: "🔱", earned: starCounts[4] >= 50 },
+    
+    { key: "badge.streak3", icon: "⚡", earned: streak >= 3 },
     { key: "badge.streak7", icon: "🔥", earned: streak >= 7 },
+    { key: "badge.streak30", icon: "🌋", earned: streak >= 30 },
+    { key: "badge.streak100", icon: "☄️", earned: streak >= 100 },
   ];
   return (
     <div className="badge-grid">

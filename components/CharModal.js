@@ -161,9 +161,15 @@ export default function CharModal({ item, onClose }) {
                   <div className="reading-row"><span className="reading-label">KUN-YOMİ</span> <span className="jp">{item.kun.join("、")}</span> <span className="hint">({item.kun.map((r) => kanaToRomaji(r.replace(/[()]/g, ""))).join(", ")})</span></div>
                 )}
                 <div className="reading-row" style={{ marginTop: 6 }}>
-                  {apiInfo?.stroke_count && <span className="badge">✏️ {apiInfo.stroke_count} çizgi</span>}
-                  {apiInfo?.jlpt && <span className="badge">JLPT N{apiInfo.jlpt}</span>}
-                  {apiInfo?.grade && <span className="badge">{apiInfo.grade}. sınıf</span>}
+                  {(apiInfo?.stroke_count || item.strokes) && (
+                    <span className="badge">✏️ {apiInfo?.stroke_count || item.strokes} çizgi</span>
+                  )}
+                  {(apiInfo?.jlpt || item.jlpt) && (
+                    <span className="badge">JLPT N{apiInfo?.jlpt || item.jlpt}</span>
+                  )}
+                  {(apiInfo?.grade || item.grade) && (
+                    <span className="badge">{apiInfo?.grade || item.grade}. sınıf</span>
+                  )}
                 </div>
               </>
             ) : (

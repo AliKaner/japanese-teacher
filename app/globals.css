@@ -188,7 +188,46 @@ body {
   text-align: center;
   color: var(--muted);
   font-size: 0.85rem;
-  padding: 24px 16px 40px;
+  padding: 32px 16px 48px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  margin-top: 64px;
+}
+.footer-content {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.footer-motivation {
+  margin: 0;
+  font-weight: 500;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.footer-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.footer-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+.footer-divider {
+  color: var(--border);
+}
+.footer-copyright {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  opacity: 0.8;
 }
 
 /* ---------- Genel ---------- */

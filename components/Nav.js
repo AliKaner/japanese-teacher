@@ -9,7 +9,9 @@ import { useI18n } from "@/lib/i18n";
 import Logo from "./Logo";
 
 const LINKS = [
-  { href: "/learn", key: "nav.learn" },
+  { href: "/learn/hiragana", key: "nav.hiragana" },
+  { href: "/learn/katakana", key: "nav.katakana" },
+  { href: "/learn/kanji", key: "nav.learnKanji" },
   { href: "/practice", key: "nav.practice" },
   { href: "/read", key: "nav.read" },
   { href: "/dictionary", key: "nav.dict" },

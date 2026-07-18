@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { KANA_GROUPS, KANJI } from "@/lib/data";
-import { KANJI_EN, WORDS_EN } from "@/lib/en";
+import { KANA_GROUPS } from "@/lib/data";
+import { WORDS_EN } from "@/lib/en";
 import { kanaToRomaji } from "@/lib/romaji";
 import { speak } from "@/lib/tts";
 import { wordsStartingWith, wordsContainingKanji } from "@/lib/words";
@@ -20,11 +20,24 @@ const MODES = [
 
 const ALL_KANA = KANA_GROUPS.flatMap((g) => g.rows.flat()).filter(Boolean);
 
-function randomItem(mode) {
+function randomLocalKana(script) {
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const m = mode === "mixed" ? pick(["hiragana", "katakana", "kanji"]) : mode;
-  if (m === "kanji") return { type: "kanji", ...pick(KANJI) };
-  return { type: "kana", ...pick(ALL_KANA), script: m };
+  return { type: "kana", ...pick(ALL_KANA), script };
+}
+
+function makeLocalKanaQuestion(script) {
+  const item = randomLocalKana(script);
+  const correct = item.r;
+  const options = new Set([correct]);
+  let guard = 0;
+  while (options.size < 4 && guard++ < 200) {
+    options.add(randomLocalKana(script).r);
+  }
+  return {
+    item,
+    correct,
+    options: [...options].sort(() => Math.random() - 0.5),
+  };
 }
 
 function displayChar(item) {
@@ -32,37 +45,65 @@ function displayChar(item) {
   return item.script === "katakana" ? item.k : item.h;
 }
 
-function kanjiMeaning(item, lang) {
-  return lang === "en" ? KANJI_EN[item.c] || item.m : item.m;
-}
-
 function wordMeaning(w, lang) {
   return lang === "en" ? WORDS_EN[w.w] || w.m : w.m;
 }
 
-function answerOf(item, lang) {
-  // Kana için romaji, kanji için seçili dilde anlam
-  return item.type === "kanji" ? kanjiMeaning(item, lang) : item.r;
-}
-
-// ---------- Rastgele harf kartı ----------
+// ---------- Random Character Card ----------
 function RandomChar() {
   const { t, lang } = useI18n();
   const [mode, setMode] = useState("hiragana");
+  const [jlpt, setJlpt] = useState("all");
   const [item, setItem] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const next = () => {
-    setItem(randomItem(mode));
+  const next = async (m = mode, l = jlpt) => {
+    setLoading(true);
     setRevealed(false);
+    try {
+      if (m === "kanji") {
+        const res = await fetch(`/api/kanji?random=true&jlpt=${l}`);
+        const data = await res.json();
+        setItem({ type: "kanji", ...data });
+      } else if (m === "mixed") {
+        const subMode = ["hiragana", "katakana", "kanji"][Math.floor(Math.random() * 3)];
+        if (subMode === "kanji") {
+          const res = await fetch(`/api/kanji?random=true&jlpt=${l}`);
+          const data = await res.json();
+          setItem({ type: "kanji", ...data });
+        } else {
+          setItem(randomLocalKana(subMode));
+        }
+      } else {
+        setItem(randomLocalKana(m));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    next(mode, jlpt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, jlpt]);
 
   const words = useMemo(() => {
     if (!item) return [];
     if (item.type === "kanji") return wordsContainingKanji(item.c);
     return wordsStartingWith(item.script === "katakana" ? item.k : item.h);
   }, [item]);
+
+  const changeMode = (m) => {
+    setMode(m);
+  };
+
+  const changeJlpt = (l) => {
+    setJlpt(l);
+  };
 
   return (
     <div className="card">
@@ -72,19 +113,50 @@ function RandomChar() {
           <button
             key={m.id}
             className={`tab jp ${mode === m.id ? "active" : ""}`}
-            onClick={() => setMode(m.id)}
+            onClick={() => changeMode(m.id)}
           >
             {m.label}
           </button>
         ))}
       </div>
 
-      {item ? (
+      {(mode === "kanji" || mode === "mixed") && (
+        <div style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{t("practice.level")}:</span>
+          <select
+            value={jlpt}
+            onChange={(e) => changeJlpt(e.target.value)}
+            style={{
+              padding: "4px 8px",
+              borderRadius: "6px",
+              border: "1.5px solid var(--border)",
+              background: "var(--card)",
+              color: "var(--ink)",
+              fontSize: "0.85rem",
+              outline: "none",
+            }}
+          >
+            <option value="all">{t("practice.all")}</option>
+            <option value="5">N5</option>
+            <option value="4">N4</option>
+            <option value="3">N3</option>
+            <option value="2">N2</option>
+            <option value="1">N1</option>
+          </select>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="hint" style={{ textAlign: "center", margin: "40px 0" }}>
+          {t("loading")}
+        </p>
+      ) : item ? (
         <>
           <div
             className="big-char jp"
             onClick={() => setDetail(item)}
             title="Detay için tıkla"
+            style={{ cursor: "pointer" }}
           >
             {displayChar(item)}
           </div>
@@ -92,7 +164,7 @@ function RandomChar() {
             <div className="reveal">
               {item.type === "kanji" ? (
                 <>
-                  <b>{kanjiMeaning(item, lang)}</b>{" "}
+                  <b>{lang === "tr" && item.m_tr ? item.m_tr : item.meanings[0]}</b>{" "}
                   <span className="romaji">
                     {[...item.on, ...item.kun].join("、")}
                   </span>
@@ -158,7 +230,7 @@ function RandomChar() {
       )}
 
       <div style={{ textAlign: "center", marginTop: 14 }}>
-        <button className="btn" onClick={next}>
+        <button className="btn" onClick={() => next(mode, jlpt)}>
           {t("practice.newChar")}
         </button>
       </div>
@@ -168,48 +240,64 @@ function RandomChar() {
   );
 }
 
-// ---------- Çoktan seçmeli quiz ----------
-function makeQuestion(mode, lang) {
-  const item = randomItem(mode);
-  const correct = answerOf(item, lang);
-  const options = new Set([correct]);
-  let guard = 0;
-  while (options.size < 4 && guard++ < 200) {
-    const other = answerOf(
-      randomItem(mode === "mixed" ? (item.type === "kanji" ? "kanji" : "hiragana") : mode),
-      lang
-    );
-    options.add(other);
-  }
-  return {
-    item,
-    correct,
-    options: [...options].sort(() => Math.random() - 0.5),
-  };
-}
-
+// ---------- Multiple Choice Quiz ----------
 function Quiz() {
   const { t, lang } = useI18n();
   const [mode, setMode] = useState("hiragana");
+  const [jlpt, setJlpt] = useState("all");
   const [q, setQ] = useState(null);
   const [picked, setPicked] = useState(null);
   const [score, setScore] = useState({ ok: 0, total: 0, streak: 0 });
+  const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useConvexAuth();
   const recordCorrect = useMutation(api.progress.recordCorrect);
 
-  const next = (m = mode) => {
-    setQ(makeQuestion(m, lang));
+  const next = async (m = mode, l = jlpt) => {
+    setLoading(true);
     setPicked(null);
+    try {
+      if (m === "kanji") {
+        const res = await fetch(`/api/kanji?quiz=true&lang=${lang}&jlpt=${l}`);
+        const data = await res.json();
+        setQ(data);
+      } else if (m === "mixed") {
+        const subMode = ["hiragana", "katakana", "kanji"][Math.floor(Math.random() * 3)];
+        if (subMode === "kanji") {
+          const res = await fetch(`/api/kanji?quiz=true&lang=${lang}&jlpt=${l}`);
+          const data = await res.json();
+          setQ(data);
+        } else {
+          setQ(makeLocalKanaQuestion(subMode));
+        }
+      } else {
+        setQ(makeLocalKanaQuestion(m));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const changeMode = (m) => {
     setMode(m);
     setScore({ ok: 0, total: 0, streak: 0 });
-    next(m);
+    next(m, jlpt);
   };
 
+  const changeJlpt = (l) => {
+    setJlpt(l);
+    setScore({ ok: 0, total: 0, streak: 0 });
+    next(mode, l);
+  };
+
+  useEffect(() => {
+    next(mode, jlpt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
   const pick = (opt) => {
-    if (picked !== null) return;
+    if (picked !== null || !q) return;
     setPicked(opt);
     const good = opt === q.correct;
     setScore((s) => ({
@@ -218,7 +306,6 @@ function Quiz() {
       streak: good ? s.streak + 1 : 0,
     }));
     if (good && q.item.type === "kanji" && isAuthenticated) {
-      // Kanji haritasındaki sayacı artır (top 2500 listesindeyse)
       recordCorrect({ char: q.item.c }).catch(() => {});
     }
     if (q.item.type !== "kanji") speak(q.item.h);
@@ -239,7 +326,37 @@ function Quiz() {
         ))}
       </div>
 
-      {q ? (
+      {(mode === "kanji" || mode === "mixed") && (
+        <div style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: "0.85rem", color: "var(--muted)" }}>{t("practice.level")}:</span>
+          <select
+            value={jlpt}
+            onChange={(e) => changeJlpt(e.target.value)}
+            style={{
+              padding: "4px 8px",
+              borderRadius: "6px",
+              border: "1.5px solid var(--border)",
+              background: "var(--card)",
+              color: "var(--ink)",
+              fontSize: "0.85rem",
+              outline: "none",
+            }}
+          >
+            <option value="all">{t("practice.all")}</option>
+            <option value="5">N5</option>
+            <option value="4">N4</option>
+            <option value="3">N3</option>
+            <option value="2">N2</option>
+            <option value="1">N1</option>
+          </select>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="hint" style={{ textAlign: "center", margin: "40px 0" }}>
+          {t("loading")}
+        </p>
+      ) : q ? (
         <>
           <div className="big-char jp">{displayChar(q.item)}</div>
           <p className="hint" style={{ textAlign: "center", margin: 0 }}>
@@ -269,7 +386,7 @@ function Quiz() {
           </div>
           {picked !== null && (
             <div style={{ textAlign: "center", marginTop: 14 }}>
-              <button className="btn" onClick={() => next()}>
+              <button className="btn" onClick={() => next(mode, jlpt)}>
                 {t("practice.next")}
               </button>
             </div>
@@ -286,7 +403,7 @@ function Quiz() {
       ) : (
         <div style={{ textAlign: "center" }}>
           <p className="hint">{t("practice.quizIntro")}</p>
-          <button className="btn" onClick={() => next()}>
+          <button className="btn" onClick={() => next(mode, jlpt)}>
             {t("practice.start")}
           </button>
         </div>

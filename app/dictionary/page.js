@@ -4,8 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { speak } from "@/lib/tts";
 import { kanaToRomaji } from "@/lib/romaji";
+import { useI18n } from "@/lib/i18n";
 
 function DictionaryInner() {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const initialQ = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQ);
@@ -33,7 +35,7 @@ function DictionaryInner() {
     try {
       const res = await fetch(`/api/dictionary?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Arama başarısız");
+      if (!res.ok) throw new Error(data.error || t("dict.error"));
       setResults(data.data || []);
     } catch (err) {
       setError(err.message);
@@ -45,11 +47,11 @@ function DictionaryInner() {
 
   return (
     <div>
-      <h1>🔍 Sözlük</h1>
+      <h1>{t("dict.title")}</h1>
       <p className="subtitle">
-        Jisho.org üzerinden arama yap — Japonca, romaji veya İngilizce kelime
-        yazabilirsin (ör: <i>ねこ</i>, <i>neko</i>, <i>cat</i>). Tanımlar
-        İngilizcedir.
+        {t("dict.subtitlePrefix")}
+        <i>ねこ</i>, <i>neko</i>, <i>cat</i>
+        {t("dict.subtitleSuffix")}
       </p>
 
       <form className="search-row" onSubmit={search}>
@@ -57,17 +59,17 @@ function DictionaryInner() {
           className="search-input jp"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Kelime ara… (örn: 水, mizu, water)"
+          placeholder={t("dict.placeholder")}
         />
         <button className="btn" type="submit" disabled={loading}>
-          {loading ? "Aranıyor…" : "Ara"}
+          {loading ? t("dict.searching") : t("dict.search")}
         </button>
       </form>
 
       {error && <p className="error-text">⚠️ {error}</p>}
 
       {results && results.length === 0 && (
-        <p className="hint">Sonuç bulunamadı.</p>
+        <p className="hint">{t("dict.noResults")}</p>
       )}
 
       {results && results.length > 0 && (
@@ -81,7 +83,7 @@ function DictionaryInner() {
                 <span
                   className="dict-word jp"
                   onClick={() => speak(reading || word)}
-                  title="Dinlemek için tıkla"
+                  title={t("dict.listenHint")}
                 >
                   {word}
                 </span>
@@ -92,7 +94,7 @@ function DictionaryInner() {
                   </span>
                 )}
                 <div className="dict-tags">
-                  {entry.is_common && <span className="badge">yaygın</span>}
+                  {entry.is_common && <span className="badge">{t("dict.common")}</span>}
                   {(entry.jlpt || []).map((tag) => (
                     <span className="badge" key={tag}>
                       {tag.replace("jlpt-", "JLPT ").toUpperCase()}
