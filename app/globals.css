@@ -965,16 +965,62 @@ h1 { animation: rise 0.3s ease both; }
 .setup-row:last-of-type { border-bottom: none; }
 .setup-label { font-weight: 700; font-size: 0.88rem; }
 .setup-actions { display: flex; gap: 8px; }
-.setup-kana-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-  gap: 4px;
-  padding: 4px;
+.setup-kana-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px;
   border: 1px solid var(--border);
   border-radius: 10px;
   touch-action: none; /* basılı tut + sürükle seçim için */
   user-select: none;
 }
+.kana-group { display: flex; flex-direction: column; gap: 3px; }
+.kana-group-btn {
+  align-self: flex-start;
+  border: 1px dashed var(--border);
+  background: none;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 3px;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+.kana-group-btn:hover { border-color: var(--accent); color: var(--accent); }
+.kana-group-btn.on {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.kana-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+.kana-row-btn {
+  min-width: 40px;
+  border: 1px dashed var(--border);
+  background: none;
+  color: var(--muted);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.kana-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+.kana-row-btn.on {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.kana-pick { width: 46px; }
 .setup-kanji-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
@@ -1187,7 +1233,8 @@ h1 { animation: rise 0.3s ease both; }
   .footer { padding: 18px 12px 28px; }
 
   /* Pratik ayar paneli mobil */
-  .setup-kana-grid { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); }
+  .kana-pick { width: 40px; font-size: 0.95rem; }
+  .kana-row-btn { min-width: 34px; font-size: 0.68rem; }
   .setup-kanji-grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); }
   .setup-panel .tabs { gap: 6px; }
   .setup-panel .tab { padding: 7px 12px; font-size: 0.85rem; }

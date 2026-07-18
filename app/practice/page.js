@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { KANA_GROUPS } from "@/lib/data";
-import { WORDS_EN } from "@/lib/en";
+import { WORDS_EN, GROUP_EN } from "@/lib/en";
 import { kanaToRomaji } from "@/lib/romaji";
 import { speak } from "@/lib/tts";
 import { wordsStartingWith, wordsContainingKanji } from "@/lib/words";
@@ -64,7 +64,7 @@ function jlptParam(config) {
 
 // ---------- Ayar Paneli ----------
 function KanaPicker({ config, setConfig }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   // Basılı tutup sürükleyerek seçim: ilk hücrenin yeni durumu sürükleme
   // boyunca uygulanır (ekleme ya da çıkarma modu).
   const dragMode = useRef(null); // null | true (ekle) | false (çıkar)
@@ -77,6 +77,18 @@ function KanaPicker({ config, setConfig }) {
         ...c,
         kanaSel: add ? [...c.kanaSel, h] : c.kanaSel.filter((x) => x !== h),
       };
+    });
+  };
+
+  // Bir grup hücreyi (satır ya da tüm grup) topluca seç / bırak
+  const applyMany = (cells) => {
+    setConfig((c) => {
+      const hs = cells.map((k) => k.h);
+      const allOn = hs.every((h) => c.kanaSel.includes(h));
+      const set = new Set(c.kanaSel);
+      if (allOn) hs.forEach((h) => set.delete(h));
+      else hs.forEach((h) => set.add(h));
+      return { ...c, kanaSel: [...set] };
     });
   };
 
@@ -105,6 +117,10 @@ function KanaPicker({ config, setConfig }) {
     dragMode.current = null;
   };
 
+  const showH = config.sources.includes("hiragana");
+  const isOn = (h) => config.kanaSel.includes(h);
+  const allOn = (cells) => cells.length > 0 && cells.every((k) => isOn(k.h));
+
   return (
     <>
       <div className="setup-actions">
@@ -117,24 +133,53 @@ function KanaPicker({ config, setConfig }) {
         <span className="hint">{t("practice.dragHint")}</span>
       </div>
       <div
-        className="setup-kana-grid"
+        className="setup-kana-wrap"
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
         onPointerLeave={endDrag}
       >
-        {ALL_KANA.map((k) => (
-          <button
-            key={k.h}
-            data-kana={k.h}
-            className={`kana-pick jp ${config.kanaSel.includes(k.h) ? "on" : ""}`}
-            title={k.r}
-          >
-            {config.sources.includes("hiragana") ? k.h : k.k}
-            <span className="kana-pick-r">{k.r}</span>
-          </button>
-        ))}
+        {KANA_GROUPS.map((group) => {
+          const groupCells = group.rows.flat().filter(Boolean);
+          return (
+            <div key={group.name} className="kana-group">
+              <button
+                className={`kana-group-btn ${allOn(groupCells) ? "on" : ""}`}
+                onClick={() => applyMany(groupCells)}
+              >
+                {allOn(groupCells) ? "✓ " : "○ "}
+                {lang === "en" ? GROUP_EN[group.name] || group.name : group.name}
+              </button>
+              {group.rows.map((row, i) => {
+                const cells = row.filter(Boolean);
+                if (!cells.length) return null;
+                return (
+                  <div key={i} className="kana-row">
+                    <button
+                      className={`kana-row-btn jp ${allOn(cells) ? "on" : ""}`}
+                      onClick={() => applyMany(cells)}
+                      title={cells.map((k) => k.r).join(" ")}
+                    >
+                      {showH ? cells[0].h : cells[0].k}行
+                    </button>
+                    {cells.map((k) => (
+                      <button
+                        key={k.h}
+                        data-kana={k.h}
+                        className={`kana-pick jp ${isOn(k.h) ? "on" : ""}`}
+                        title={k.r}
+                      >
+                        {showH ? k.h : k.k}
+                        <span className="kana-pick-r">{k.r}</span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     </>
   );
