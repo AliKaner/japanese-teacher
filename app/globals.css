@@ -940,6 +940,65 @@ h1 { animation: rise 0.3s ease both; }
   margin-top: 14px;
 }
 
+/* ---------- Pratik Ayar Paneli ---------- */
+.setup-panel { animation: rise 0.3s ease both; }
+.setup-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.12);
+}
+.setup-row:last-of-type { border-bottom: none; }
+.setup-label { font-weight: 700; font-size: 0.88rem; }
+.setup-actions { display: flex; gap: 8px; }
+.setup-kana-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.kana-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 4px 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 1.05rem;
+  cursor: pointer;
+  line-height: 1.25;
+  transition: all 0.1s;
+}
+.kana-pick .kana-pick-r { font-size: 0.6rem; color: var(--muted); }
+.kana-pick:hover { border-color: var(--accent); }
+.kana-pick.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.kana-pick.on .kana-pick-r { color: rgba(255, 255, 255, 0.8); }
+.setup-custom { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.kchip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.kchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.kchip-x { font-size: 0.7rem; color: var(--muted); }
+.kchip:hover { background: var(--bad); border-color: var(--bad); color: #fff; }
+.kchip:hover .kchip-x { color: #fff; }
+
 /* ---------- Font Seçici ---------- */
 .font-picker {
   display: grid;
@@ -1092,6 +1151,16 @@ h1 { animation: rise 0.3s ease both; }
   .friend-row { font-size: 0.9rem; }
   .friend-stats { font-size: 0.85rem; }
   .footer { padding: 18px 12px 28px; }
+
+  /* Pratik ayar paneli mobil */
+  .setup-kana-grid {
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    max-height: 200px;
+  }
+  .setup-panel .tabs { gap: 6px; }
+  .setup-panel .tab { padding: 7px 12px; font-size: 0.85rem; }
+  .setup-custom .nav-search { max-width: none !important; }
+  .quiz-options { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
